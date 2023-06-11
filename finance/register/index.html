@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registration Form</title>
+    <link rel="stylesheet" type="text/css" href="/finance/res/login.css">
+  <style>
+    .container {
+      margin: 50px auto;
+      width: 70%;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    #encryptedText {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 100%;
+      overflow-wrap: break-word;
+    }
+    #copyButton {
+      margin-top: 10px;
+    }
+    .login {
+    display: unset !important;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registration Form</h2>
+    <form id="registrationForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" required>
+      
+      <label for="password">Password:</label>
+      <input type="password" id="password" required>
+      
+      <label for="url">URL:</label>
+      <input type="text" id="url" required>
+      
+      <input class="login" type="submit" value="Register">
+    </form>
+    
+    <div id="encryptedText"></div>
+    <button class="login" id="copyButton" onclick="copyText()">Copy</button>
+  </div>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="/finance/res/sha256.js"></script>
+  
+  <script>
+  if(window.location.hash) {
+  document.getElementById('url').value = decodeURI(window.location.hash.substring(1))
+} 
+    const encryptWithAES = (text, passphrase) => {
+      return CryptoJS.AES.encrypt(text, passphrase).toString();
+    };
+
+    const decryptWithAES = (ciphertext, passphrase) => {
+      const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase);
+      const originalText = bytes.toString(CryptoJS.enc.Utf8);
+      return originalText;
+    };
+
+    function copyText() {
+      const encryptedText = document.getElementById('encryptedText');
+      const textarea = document.createElement('textarea');
+      textarea.value = encryptedText.textContent;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      
+      alert('Copied to clipboard!');
+    }
+
+    document.getElementById('registrationForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const url = document.getElementById('url').value;
+      const passwordHash = sha256(sha256(username) + ":" + sha256(password));
+      const passphrase = username + ':' + sha256(password);
+      const encryptedUrl = encryptWithAES(url, passphrase);
+      const result = username + ":" + passwordHash + ':' + encryptedUrl;
+      document.cookie = "username=" + username + ";path=/";
+      document.cookie = "credentials=" + sha256(password) + ";path=/";
+      document.cookie = "url=" + encryptedUrl + ";path=/";
+      document.getElementById('encryptedText').textContent = result;
+      copyText()
+  //    document.getElementById('encryptedText').textContent = encryptedUrl;
+    });
+  </script>
+</body>
+</html>
+

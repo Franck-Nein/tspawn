@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login Page</title>
+  <link rel="stylesheet" type="text/css" href="/finance/res/login.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form id="login-form">
+    <div class="whoLogged">
+  <span>Not currently logged in</span>
+</div>
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <div class="button">
+        <button class="login" type="submit">Login</button>
+        <button class="logout">Logout</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="/finance/res/login.js"></script>
+  <script src="/finance/res/sha256.js"></script>
+</body>
+</html>
+

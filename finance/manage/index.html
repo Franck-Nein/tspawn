@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Spreadsheet</title>
+  <link rel="stylesheet" type="text/css" href="/finance/res/login.css">
+  <link rel="stylesheet" type="text/css" href="/finance/res/login.css">
+</head>
+<body>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script type="text/javascript" src="/finance/res/sha256.js"></script>
+<script type="text/javascript" src="/finance/res/cookie.js"></script>
+<script type="text/javascript" src="/finance/res/crypto.js"></script>
+
+<center id="spreadsheet"></center>
+<style>
+iframe {
+    width: 100%;
+    height: 100%;
+    border:0;
+}
+* {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+#spreadsheet {
+    height: 100%;
+    width: 100%;
+}
+.logout {
+    position: fixed;
+    top: 0%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    z-index: 9999;
+}
+</style>
+
+</body>
+<script>
+
+  if (isCookie("username")){
+    let username = getCookie("username");
+    let credentials = getCookie("credentials");
+    let url = getCookie("url");
+    let passphrase = username + ':' + credentials;
+    let dUrl = '<iframe src="' + decryptWithAES(url, passphrase) + '"></iframe><button class="logout">Logout</button>'
+    document.getElementById('spreadsheet').innerHTML = dUrl;
+   document.querySelector(".logout").addEventListener("click", function() {
+  event.preventDefault(); // Prevent form submission
+  alert("Logged Out!");
+  logOut();
+  window.location.href = "/finance/login/";
+});
+  } else {
+     document.getElementById('spreadsheet').innerHTML = "not logged in"
+  }
+  function logOut() {
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i];
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";;
+    }
+}
+
+</script>
+</html>
+
